@@ -1,0 +1,119 @@
+<div class="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm animate-in fade-in duration-200" (click)="onClose.emit()">
+  
+  <div class="bg-[#1a1625] w-full max-w-5xl rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative flex flex-col md:flex-row max-h-[90vh] md:h-[600px]" (click)="$event.stopPropagation()">
+    
+    <button (click)="onClose.emit()" class="absolute top-4 right-4 text-white/70 hover:text-white z-50 bg-black/50 p-2 rounded-full hover:bg-red-500/80 transition-all">
+      <lucide-icon [img]="icons.X" [size]="20"></lucide-icon>
+    </button>
+    
+    @if (!loggingMode) {
+      <div class="relative w-full md:w-[350px] h-64 md:h-full shrink-0">
+        <img [src]="anime.images.jpg.large_image_url" class="w-full h-full object-cover" [alt]="anime.title" />
+        <div class="absolute inset-0 bg-gradient-to-t from-[#1a1625] md:bg-gradient-to-r md:from-transparent md:to-[#1a1625]"></div>
+      </div>
+
+      <div class="p-6 md:p-10 flex-1 overflow-y-auto custom-scrollbar flex flex-col">
+        <h2 class="text-4xl font-black text-white mb-2 leading-tight">{{ anime.title }}</h2>
+        
+        <div class="flex items-center gap-4 text-sm text-gray-400 mb-6">
+           <span class="border border-white/20 px-2 py-0.5 rounded text-xs">{{ anime.year || 'N/A' }}</span>
+           <span>{{ anime.type }}</span>
+           <span class="flex items-center gap-1 text-yellow-400">
+             <lucide-icon [img]="icons.Star" [size]="14" class="fill-current"></lucide-icon> {{ anime.score }}
+           </span>
+        </div>
+
+        <div class="flex flex-wrap gap-3 mb-8">
+           <button (click)="onToggleFav.emit()" class="flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
+             [class]="isFav ? 'bg-red-500/20 text-red-500 border border-red-500/50' : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'">
+             <lucide-icon [img]="icons.Heart" [size]="18" [class]="isFav ? 'fill-current' : ''"></lucide-icon> {{ isFav ? 'Favorito' : 'Favoritar' }}
+           </button>
+           
+           <button (click)="onToggleWatch.emit()" class="flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all"
+             [class]="isWatch ? 'bg-blue-500/20 text-blue-500 border border-blue-500/50' : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10'">
+             <lucide-icon [img]="icons.Clock" [size]="18"></lucide-icon> {{ isWatch ? 'Na Lista' : 'Watchlist' }}
+           </button>
+           
+           <button (click)="loggingMode = true" class="flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center gap-2 bg-green-500/20 text-green-400 border border-green-500/50 hover:bg-green-500/30 transition-all">
+             <lucide-icon [img]="icons.PenTool" [size]="18"></lucide-icon> Diário
+           </button>
+        </div>
+
+        <div class="space-y-6">
+          <div>
+            <h3 class="text-white/50 text-xs font-bold uppercase tracking-widest mb-2 flex items-center gap-2">
+               Sinopse @if(!translatedSynopsis) { <span class="text-purple-400 animate-pulse text-[10px]">(Traduzindo...)</span> }
+            </h3>
+            <p class="text-gray-300 leading-relaxed text-sm md:text-base">
+               {{ translatedSynopsis || anime.synopsis || "Sem sinopse disponível." }}
+            </p>
+          </div>
+
+          <div class="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 p-6 rounded-2xl border border-purple-500/20 relative overflow-hidden">
+            <div class="flex justify-between items-center mb-4 relative z-10">
+               <span class="text-purple-300 font-bold flex items-center gap-2 text-sm uppercase tracking-wider">
+                 <lucide-icon [img]="icons.Sparkles" [size]="16" class="text-yellow-400"></lucide-icon> IA Insight
+               </span>
+               @if (!aiResponse) {
+                 <button (click)="handleAskAI()" [disabled]="loadingAI" class="bg-purple-600 hover:bg-purple-500 text-white text-xs px-4 py-2 rounded-full font-bold transition-all disabled:opacity-50 shadow-lg shadow-purple-500/20">
+                   {{ loadingAI ? 'Processando...' : 'Gerar 3 Motivos' }}
+                 </button>
+               }
+            </div>
+
+            @if (aiResponse) {
+               <div class="relative z-10 animate-in fade-in slide-in-from-bottom-2">
+                 <p class="text-gray-200 text-sm italic mb-4 leading-relaxed border-l-2 border-purple-500 pl-3">"{{ aiResponse.intro }}"</p>
+                 <div class="grid gap-3">
+                   @for (reason of aiResponse.reasons; track $index) {
+                     <div class="flex gap-3 items-start bg-black/20 p-3 rounded-lg border border-white/5">
+                       <span class="bg-purple-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">{{ $index + 1 }}</span>
+                       <span class="text-sm text-gray-300 font-medium">{{ reason }}</span>
+                     </div>
+                   }
+                 </div>
+               </div>
+            } @else {
+              <div class="text-white/30 text-xs relative z-10 flex flex-col items-center justify-center py-4 gap-2">
+                 <lucide-icon [img]="icons.Zap" [size]="24" class="opacity-50"></lucide-icon>
+                 <p>Descubra o que a IA pensa sobre este anime...</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+    } @else {
+      <div class="p-10 w-full flex flex-col h-full justify-center">
+         <h3 class="text-3xl font-black text-white mb-8 border-l-4 border-green-500 pl-4">Registrar no Diário</h3>
+         <div class="space-y-6 max-w-lg mx-auto w-full">
+            
+            <div class="space-y-2">
+               <label class="text-gray-400 text-sm font-bold uppercase">Data</label>
+               <input type="date" [(ngModel)]="logData.date" class="w-full bg-black/30 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-green-500 transition-colors" />
+            </div>
+
+            <div class="space-y-2">
+               <label class="text-gray-400 text-sm font-bold uppercase">Sua Nota</label>
+               <div class="flex gap-2 cursor-pointer bg-black/30 border border-white/10 rounded-xl p-4 w-fit">
+                  @for (s of [1,2,3,4,5]; track s) {
+                    <lucide-icon [img]="icons.Star" [size]="28" (click)="logData.rating = s" 
+                      [class]="s <= logData.rating ? 'text-green-400 fill-green-400' : 'text-gray-600'"></lucide-icon>
+                  }
+               </div>
+            </div>
+
+            <div class="space-y-2">
+               <label class="text-gray-400 text-sm font-bold uppercase">Review Rápido</label>
+               <textarea rows="4" [(ngModel)]="logData.review" class="w-full bg-black/30 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-green-500 transition-colors resize-none" placeholder="O que achou?"></textarea>
+            </div>
+
+            <div class="flex gap-4 pt-4">
+               <button (click)="loggingMode = false" class="px-6 py-3 text-gray-400 hover:text-white font-bold transition-colors">Voltar</button>
+               <button (click)="saveLog()" class="flex-1 px-6 py-3 bg-green-500 text-black font-black rounded-xl hover:bg-green-400 hover:scale-[1.02] transition-all shadow-lg shadow-green-500/20">SALVAR REGISTRO</button>
+            </div>
+         </div>
+      </div>
+    }
+  </div>
+</div>

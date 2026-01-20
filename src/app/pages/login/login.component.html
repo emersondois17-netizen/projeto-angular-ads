@@ -1,0 +1,74 @@
+<div class="flex items-center justify-center min-h-screen relative overflow-hidden animate-in zoom-in-95 duration-500 pt-20 pb-20">
+            
+    <div class="absolute inset-0 bg-[#0f0c14]"></div>
+    <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-[120px] animate-pulse"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[120px] animate-pulse"></div>
+
+    <div class="relative z-10 w-full max-w-md p-6">
+       <div class="bg-[#1a1625]/80 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl relative overflow-hidden">
+          
+          <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500"></div>
+
+          <div class="text-center mb-8">
+             <div class="w-16 h-16 bg-gradient-to-tr from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl font-black text-white shadow-lg shadow-purple-500/30">Z</div>
+             <h2 class="text-3xl font-black text-white mb-2">{{ isLoginMode ? 'Bem-vindo de volta!' : 'Junte-se à Tropa' }}</h2>
+             <p class="text-gray-400 text-sm">
+                {{ isLoginMode ? 'Continue sua jornada otaku.' : 'Comece a catalogar seus animes hoje.' }}
+             </p>
+          </div>
+
+          <form class="space-y-5" (submit)="$event.preventDefault(); handleAuth()">
+             
+             @if (!isLoginMode) {
+                <div class="space-y-2 animate-in slide-in-from-top-2 fade-in">
+                   <label class="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Nome de Usuário</label>
+                   <div class="relative flex items-center bg-black/40 border border-white/10 rounded-xl px-4 py-3 focus-within:border-purple-500 transition-colors">
+                      <lucide-icon [img]="icons.User" class="text-gray-500 w-5 h-5 mr-3 shrink-0"></lucide-icon>
+                      <input type="text" [(ngModel)]="username" name="username" required class="w-full bg-transparent text-white outline-none placeholder:text-gray-600" placeholder="Ex: GokuSuperSaiyan">
+                   </div>
+                </div>
+             }
+
+             <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Email</label>
+                <div class="relative flex items-center bg-black/40 border border-white/10 rounded-xl px-4 py-3 focus-within:border-purple-500 transition-colors">
+                   <lucide-icon [img]="icons.Mail" class="text-gray-500 w-5 h-5 mr-3 shrink-0"></lucide-icon>
+                   <input type="email" [(ngModel)]="email" name="email" required class="w-full bg-transparent text-white outline-none placeholder:text-gray-600" placeholder="seu@email.com">
+                </div>
+             </div>
+
+             <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Senha</label>
+                <div class="relative flex items-center bg-black/40 border border-white/10 rounded-xl px-4 py-3 focus-within:border-purple-500 transition-colors">
+                   <lucide-icon [img]="icons.Lock" class="text-gray-500 w-5 h-5 mr-3 shrink-0"></lucide-icon>
+                   <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password" name="password" required class="w-full bg-transparent text-white outline-none placeholder:text-gray-600" placeholder="••••••••">
+                   
+                   <button type="button" (click)="showPassword = !showPassword" class="text-gray-500 hover:text-white transition-colors ml-2 flex items-center">
+                      <lucide-icon [img]="showPassword ? icons.EyeOff : icons.Eye" [size]="20"></lucide-icon>
+                   </button>
+                </div>
+             </div>
+
+             <button [disabled]="authLoading" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-purple-500/25 mt-6 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+                @if (authLoading) {
+                   <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                   <span>Validando...</span>
+                } @else {
+                   <lucide-icon [img]="icons.LogIn" [size]="20"></lucide-icon>
+                   <span>{{ isLoginMode ? 'ACESSAR CONTA' : 'CRIAR CONTA GRÁTIS' }}</span>
+                }
+             </button>
+          </form>
+
+          <div class="mt-8 text-center pt-6 border-t border-white/5">
+             <p class="text-gray-400 text-sm">
+                {{ isLoginMode ? 'Ainda não tem uma conta?' : 'Já possui cadastro?' }}
+                <button (click)="isLoginMode = !isLoginMode" class="text-purple-400 font-bold hover:text-white hover:underline ml-1 transition-colors">
+                   {{ isLoginMode ? 'Cadastre-se' : 'Fazer Login' }}
+                </button>
+             </p>
+          </div>
+
+       </div>
+    </div>
+ </div>

@@ -1,0 +1,85 @@
+<div class="min-h-screen pb-20 animate-in fade-in duration-700">
+   
+   <div class="relative w-full h-[45vh] overflow-hidden flex items-end shadow-2xl mb-8">
+      @if (favoriteHeroImage) {
+         <div class="absolute inset-0 z-0">
+            <img [src]="favoriteHeroImage" class="w-full h-full object-cover blur-lg opacity-70 scale-105">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0f0c14] via-[#0f0c14]/60 to-transparent"></div>
+            <div class="absolute inset-0 bg-purple-900/20 mix-blend-overlay"></div>
+         </div>
+      } @else {
+         <div class="absolute inset-0 z-0 bg-gradient-to-b from-purple-900/40 via-[#1a1625] to-[#0f0c14]"></div>
+      }
+
+      <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-12 flex flex-col md:flex-row items-end justify-between gap-6">
+         <div>
+            <div class="flex items-center gap-2 mb-2">
+               <span class="bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Coleção Pessoal</span>
+            </div>
+            <h1 class="text-5xl md:text-7xl font-black text-white drop-shadow-2xl tracking-tight">Minha Lista</h1>
+            <p class="text-gray-200/90 max-w-md text-sm md:text-base mt-2 font-medium drop-shadow-md">
+               Seu santuário de animes. O lugar onde as lendas que você assistiu vivem para sempre.
+            </p>
+         </div>
+
+         @if (favorites.length > 0) {
+            <button (click)="getRecommendations()" [disabled]="recLoading" class="bg-white text-black hover:bg-purple-50 font-bold py-4 px-8 rounded-full shadow-2xl shadow-purple-500/20 flex items-center gap-3 transition-all hover:scale-105 disabled:opacity-70 group mb-2">
+               @if (recLoading) { 
+                  <div class="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div> 
+               } @else { 
+                  <lucide-icon [img]="icons.Sparkles" [size]="20" class="text-purple-600 fill-purple-600 group-hover:rotate-12 transition-transform"></lucide-icon> 
+               }
+               <span class="uppercase tracking-wide text-xs font-black">{{ recLoading ? 'Consultando...' : 'Pedir Recomendações' }}</span>
+            </button>
+         }
+      </div>
+   </div>
+
+   <div class="max-w-7xl mx-auto px-6 -mt-6 relative z-20">
+      
+      @if (favorites.length === 0) {
+         <div class="flex flex-col items-center justify-center py-24 bg-[#1a1625]/50 border border-white/5 border-dashed rounded-3xl backdrop-blur-sm">
+            <div class="w-24 h-24 bg-gradient-to-tr from-gray-800 to-gray-700 rounded-full flex items-center justify-center mb-6 shadow-2xl">
+               <lucide-icon [img]="icons.Heart" [size]="40" class="text-gray-400 fill-gray-400/20"></lucide-icon>
+            </div>
+            <h3 class="text-3xl font-bold text-white mb-3">Sua coleção está vazia</h3>
+            <p class="text-gray-400 mb-8 max-w-sm text-center leading-relaxed">Explore o catálogo e clique no coração para salvar os animes que roubaram sua atenção.</p>
+            <a routerLink="/home" class="px-8 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-full font-bold transition-all shadow-lg hover:shadow-purple-500/25 hover:-translate-y-1">
+               Explorar Catálogo
+            </a>
+         </div>
+      } 
+      
+      @else {
+         <div class="flex items-center gap-4 mb-8 text-sm text-gray-400">
+            <span class="flex items-center gap-2 bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+               <lucide-icon [img]="icons.Heart" [size]="14" class="text-red-500 fill-current"></lucide-icon> 
+               <strong class="text-white">{{ favorites.length }}</strong> animes salvos
+            </span>
+         </div>
+
+         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            @for (anime of favorites; track anime.mal_id) {
+               <app-anime-card 
+                  [anime]="anime" 
+                  [isFav]="true" 
+                  [isWatch]="store.isWatch(anime.mal_id)" 
+                  [isWatched]="store.isWatched(anime.mal_id)" 
+                  (onClick)="openModal($event)">
+               </app-anime-card>
+            }
+         </div>
+      }
+   </div>
+
+   @if (recResult) {
+      <app-rec-modal 
+         [recommendations]="recResult" 
+         [isFav]="checkFav" 
+         [isWatch]="checkWatch" 
+         [isWatched]="checkWatched" 
+         (onClose)="recResult = null" 
+         (onSelectAnime)="openModal($event)">
+      </app-rec-modal>
+   }
+</div>

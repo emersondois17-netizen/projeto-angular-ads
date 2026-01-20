@@ -1,0 +1,62 @@
+<div class="min-h-screen pb-20 pt-20 animate-in fade-in">
+   <div class="relative w-full h-[40vh] overflow-hidden flex items-end rounded-b-3xl shadow-2xl mb-8 -mt-20">
+      @if (heroImage) {
+         <div class="absolute inset-0 z-0">
+            <img [src]="heroImage" class="w-full h-full object-cover blur-xl opacity-50 scale-110">
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0f0c14] via-[#0f0c14]/80 to-transparent"></div>
+         </div>
+      } @else {
+         <div class="absolute inset-0 z-0 bg-gradient-to-b from-blue-900/20 to-[#0f0c14]"></div>
+      }
+      <div class="relative z-10 w-full max-w-7xl mx-auto px-6 pb-8">
+         <h1 class="text-4xl md:text-6xl font-black text-white mb-4">Meu Registro</h1>
+         <div class="flex gap-4">
+            <button (click)="activeTab = 'timeline'" [class]="activeTab === 'timeline' ? 'bg-white text-black' : 'bg-white/10 text-white'" class="px-6 py-2 rounded-full font-bold transition-all">Timeline</button>
+            <button (click)="activeTab = 'watchlist'" [class]="activeTab === 'watchlist' ? 'bg-white text-black' : 'bg-white/10 text-white'" class="px-6 py-2 rounded-full font-bold transition-all">Na Fila ({{watchlist.length}})</button>
+         </div>
+      </div>
+   </div>
+
+   <div class="max-w-7xl mx-auto px-6">
+      
+      @if (activeTab === 'timeline') {
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-[#1a1625] border border-white/10 p-6 rounded-2xl flex items-center gap-4">
+               <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center text-purple-400"><lucide-icon [img]="icons.Check"></lucide-icon></div>
+               <div><div class="text-3xl font-bold text-white">{{ diary.length }}</div><div class="text-xs text-gray-400 uppercase">Completos</div></div>
+            </div>
+            <div class="bg-[#1a1625] border border-white/10 p-6 rounded-2xl col-span-2">
+               <h3 class="text-white font-bold mb-2">Estatísticas</h3>
+               <table class="w-full text-left text-sm text-gray-400">
+                  <thead class="bg-white/5 text-white text-xs uppercase"><tr><th class="p-2">Tipo</th><th class="p-2">Qtd</th><th class="p-2">Status</th></tr></thead>
+                  <tbody class="divide-y divide-white/5">
+                     <tr><td class="p-2">Assistidos</td><td class="p-2">{{ diary.length }}</td><td class="p-2 text-green-400">OK</td></tr>
+                     <tr><td class="p-2">Na Fila</td><td class="p-2">{{ watchlist.length }}</td><td class="p-2 text-yellow-400">Pendente</td></tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+
+         <div class="space-y-4">
+            @for (entry of diary; track entry.id) {
+               <div class="bg-[#15121e] border border-white/5 rounded-xl p-4 flex gap-5 cursor-pointer hover:bg-[#1a1625] transition-all" (click)="openModal(entry.anime)">
+                  <img [src]="entry.anime.images.jpg.image_url" class="w-16 h-24 object-cover rounded-lg">
+                  <div>
+                     <h3 class="text-lg font-bold text-white">{{ entry.anime.title }}</h3>
+                     <p class="text-sm text-gray-400">{{ entry.date | date:'dd/MM/yyyy' }}</p>
+                     @if (entry.review) { <p class="text-sm text-gray-300 mt-2 italic">"{{ entry.review }}"</p> }
+                  </div>
+               </div>
+            }
+         </div>
+      }
+
+      @if (activeTab === 'watchlist') {
+         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            @for (anime of watchlist; track anime.mal_id) {
+               <app-anime-card [anime]="anime" [isWatch]="true" (onClick)="openModal($event)"></app-anime-card>
+            }
+         </div>
+      }
+   </div>
+</div>
